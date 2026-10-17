@@ -74,3 +74,12 @@ describe("mock grading", () => {
     expect(mockScore(["a point"], "   ").score).toBe(0);
   });
 });
+
+describe("sample quizzes", () => {
+  it("never overlap their line ranges", () => {
+    for (const s of SAMPLES) {
+      const qs = [...mockQuiz(s.code).questions].sort((a, b) => a.lineStart - b.lineStart);
+      for (let i = 1; i < qs.length; i++) expect(qs[i].lineStart, s.id).toBeGreaterThan(qs[i - 1].lineEnd);
+    }
+  });
+});

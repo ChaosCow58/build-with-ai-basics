@@ -38,7 +38,7 @@ const CANNED: Record<Sample["id"], CannedQuiz> = {
         prompt:
           "Every call to `debouncedRun` sees the same `timer` variable. Why? What would break if `let timer` moved inside the returned function?",
         lineStart: 2,
-        lineEnd: 5,
+        lineEnd: 3,
         concept: "Closures and shared state",
         rubric: [
           "the returned function is a closure that captures timer from debounce's scope",
@@ -291,17 +291,25 @@ export function mockQuiz(code: string): LlmQuiz {
     questions.push({ ...d.build(s, e), lineStart: s, lineEnd: e });
   }
 
-  // Fill any remaining slots with evenly spaced chunks of non-blank code.
-  for (let k = 0; questions.length < 3 && k < total; k++) {
-    const s = Math.min(total, 1 + Math.floor((k * total) / 3));
+  // Fill any remaining slots with free, non-blank lines not covered yet.
+  for (let s = 1; questions.length < 3 && s <= total; s++) {
     if (!lines[s - 1]?.trim() || overlaps(s, s)) continue;
-    let e = Math.min(total, s + 2);
-    while (e > s && overlaps(s, e)) e--;
+    let e = s;
+    while (e < Math.min(total, s + 2) && !overlaps(e + 1, e + 1)) e++;
     taken.push([s, e]);
     questions.push({ ...genericQuestion(s, e), lineStart: s, lineEnd: e });
+    s = e;
   }
+  // Tiny snippets: everything is already covered, so ask about the whole thing.
   while (questions.length < 3) {
-    questions.push({ ...genericQuestion(1, Math.min(total, 3)), lineStart: 1, lineEnd: Math.min(total, 3) });
+    questions.push({
+      type: "explain",
+      prompt: "In one or two sentences, what is the job of this whole snippet, and what would a caller get back?",
+      concept: "Overall purpose",
+      rubric: ["states what the code is for", "describes its input and output"],
+      lineStart: 1,
+      lineEnd: total,
+    });
   }
 
   questions.sort((a, b) => a.lineStart - b.lineStart);

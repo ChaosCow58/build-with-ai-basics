@@ -128,3 +128,46 @@
     @apply font-sans;
   }
 }
+/* ---------- Teachback ---------- */
+
+:root {
+  --tb-green: oklch(0.72 0.17 155);
+  --tb-amber: oklch(0.8 0.15 80);
+  --tb-red: oklch(0.66 0.21 18);
+  --tb-focus: oklch(0.68 0.16 275);
+}
+
+body {
+  background-image:
+    radial-gradient(60rem 30rem at 15% -10%, oklch(0.35 0.12 275 / 0.25), transparent 60%),
+    radial-gradient(50rem 25rem at 100% 0%, oklch(0.4 0.12 155 / 0.12), transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Monaco line decorations */
+.tb-heat-green { background: color-mix(in oklch, var(--tb-green) 16%, transparent); }
+.tb-heat-amber { background: color-mix(in oklch, var(--tb-amber) 16%, transparent); }
+.tb-heat-red { background: color-mix(in oklch, var(--tb-red) 20%, transparent); }
+.tb-heat-green-bar { background: var(--tb-green); width: 4px !important; margin-left: 3px; border-radius: 2px; }
+.tb-heat-amber-bar { background: var(--tb-amber); width: 4px !important; margin-left: 3px; border-radius: 2px; }
+.tb-heat-red-bar { background: var(--tb-red); width: 4px !important; margin-left: 3px; border-radius: 2px; }
+.tb-focus {
+  background: color-mix(in oklch, var(--tb-focus) 22%, transparent);
+  animation: tb-glow 2.4s ease-in-out infinite;
+}
+.tb-focus-bar { background: var(--tb-focus); width: 4px !important; margin-left: 3px; border-radius: 2px; }
+
+@keyframes tb-glow {
+  0%, 100% { background: color-mix(in oklch, var(--tb-focus) 14%, transparent); }
+  50% { background: color-mix(in oklch, var(--tb-focus) 28%, transparent); }
+}
+
+@keyframes tb-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.tb-rise { animation: tb-rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tb-focus, .tb-rise { animation: none; }
+}
